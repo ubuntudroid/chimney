@@ -2,6 +2,17 @@
 
 buildscript {
     ext.kotlin_version = '1.2.30'
+
+    // fetch properties from local.properties
+    Properties properties = new Properties()
+    def propertiesFile = project.rootProject.file('local.properties')
+    if (propertiesFile.exists()) {
+        properties.load(propertiesFile.newDataInputStream())
+    }
+    def chimneySteamApiToken = properties.getProperty('chimney.steam.api.token')
+
+    ext.steam_api_token = chimneySteamApiToken != null ? chimneySteamApiToken : System.getenv("STEAM_API_TOKEN")
+
     repositories {
         google()
         jcenter()
