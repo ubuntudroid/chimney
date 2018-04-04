@@ -11,7 +11,7 @@ buildscript {
     }
     def chimneySteamApiToken = properties.getProperty('chimney.steam.api.token')
 
-    ext.steam_api_token = chimneySteamApiToken != null ? chimneySteamApiToken : System.getenv("STEAM_API_TOKEN")
+    ext.steam_api_token = chimneySteamApiToken != null ? chimneySteamApiToken : System.getenv('STEAM_API_TOKEN')
 
     repositories {
         google()
@@ -30,6 +30,9 @@ allprojects {
     repositories {
         google()
         jcenter()
+        maven {
+            url  "https://dl.bintray.com/ekito/koin"
+        }
     }
 }
 
