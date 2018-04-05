@@ -4,6 +4,7 @@ import com.jakewharton.retrofit2.adapter.kotlin.coroutines.experimental.Coroutin
 import okhttp3.OkHttpClient
 import org.koin.dsl.module.applicationContext
 import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 import ubuntudroid.chimney.BuildConfig
 
 const val STEAM_SCOPE = "steam"
@@ -33,6 +34,7 @@ val steamNetworkModule = applicationContext {
                 .baseUrl(BuildConfig.STEAM_BASE_URL)
                 .client(get(STEAM_SCOPE))
                 .addCallAdapterFactory(CoroutineCallAdapterFactory())
+                .addConverterFactory(GsonConverterFactory.create())
                 .build()
     }
 }

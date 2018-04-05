@@ -4,6 +4,7 @@ import android.arch.lifecycle.LiveData
 import kotlinx.coroutines.experimental.Deferred
 import kotlinx.coroutines.experimental.async
 import retrofit2.HttpException
+import timber.log.Timber
 import ubuntudroid.chimney.data.State
 import ubuntudroid.chimney.network.steam.user.PlayerModel
 import ubuntudroid.chimney.network.steam.user.SteamUserApi
@@ -18,6 +19,11 @@ class UserRepository(private val steamUserApi: SteamUserApi) {
         // return if we already have a live data for this id request
         playerSummaryLiveDatas[steamId]?.apply { return this }
 
+        // TODO we definitely want to try and condense this code -
+        // a first step could be to move this to a proper LiveData sub-class,
+        // then refactor the redundant parts into an abstract parent class. If properly
+        // done we then might even be able to get rid of the sub-class and inline again if there
+        // is just a few lines of code left
         val liveData = object : LiveData<State<PlayerModel>>() {
 
             var deferred: Deferred<Unit>? = null
@@ -30,19 +36,25 @@ class UserRepository(private val steamUserApi: SteamUserApi) {
                 }
 
                 deferred = async {
-                    value = try {
+                    try {
                         val playerSummaries = steamUserApi.getPlayerSummaries(listOf(steamId)).await()
                         val player = playerSummaries.response.players.first { steamId == it.steamId }
-                        State(player)
+                        postValue(State(player))
                     } catch (e: HttpException) {
                         // non 200 response
-                        State(value = null, error = "Request failed: ${e.code()} ${e.message}")
+                        Timber.e(e)
+                        postValue(State(value = null, error = "Request failed: ${e.code()} ${e.message}"))
                     } catch (e: IOException) {
                         // network error
-                        State(value = null, error = "Network error: ${e.message}")
+                        Timber.e(e)
+                        postValue(State(value = null, error = "Network error: ${e.message}"))
                     } catch (e: NoSuchElementException) {
                         // user not found
-                        State(value = null, error = "User not found!")
+                        Timber.e(e)
+                        postValue(State(value = null, error = "User not found!"))
+                    } catch (e: Exception) {
+                        Timber.e(e)
+                        postValue(State(null, e.message))
                     }
                 }
             }

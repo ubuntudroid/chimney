@@ -10,8 +10,10 @@ buildscript {
         properties.load(propertiesFile.newDataInputStream())
     }
     def chimneySteamApiToken = properties.getProperty('chimney.steam.api.token')
+    def chimneySteamUserId = properties.getProperty('chimney.steam.user.id')
 
     ext.steam_api_token = chimneySteamApiToken != null ? chimneySteamApiToken : System.getenv('STEAM_API_TOKEN')
+    ext.steam_user_id = chimneySteamUserId != null ? chimneySteamUserId : System.getenv('STEAM_USER_ID')
 
     repositories {
         google()
