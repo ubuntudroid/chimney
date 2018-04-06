@@ -11,7 +11,7 @@ const val STEAM_SCOPE = "steam"
 
 val steamNetworkModule = applicationContext {
     // OkHttpClient
-    bean(STEAM_SCOPE) {
+    factory(STEAM_SCOPE) {
         OkHttpClient.Builder()
                 .addInterceptor {
                     val request = it.request()

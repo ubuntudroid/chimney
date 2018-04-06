@@ -7,6 +7,6 @@ val repositoryModule = applicationContext {
 
     // UserRepository
     bean {
-        UserRepository(get())
+        UserRepository(get(), get(), get())
     }
 }

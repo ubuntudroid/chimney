@@ -1,9 +1,8 @@
-package ubuntudroid.chimney.network.steam.user
+package ubuntudroid.chimney.network.steam
 
 import kotlinx.coroutines.experimental.Deferred
 import retrofit2.http.GET
 import retrofit2.http.Query
-import ubuntudroid.chimney.network.steam.SteamResponseModel
 
 private const val INTERFACE = "ISteamUser"
 
