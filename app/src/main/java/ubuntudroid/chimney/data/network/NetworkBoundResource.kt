@@ -10,7 +10,7 @@ import ubuntudroid.chimney.data.Resource
 import ubuntudroid.chimney.data.Success
 
 /*
- TODO move this class as well as Resource and ViewLifecycleFragment to LiveDataExtensions library.
+ TODO move this class as well as Resource, SingleLiveEvent and ViewLifecycleFragment to LiveDataExtensions library.
  NetworkBoundResource and Resource could as well be moved to stanwood/Network_android
   */
 

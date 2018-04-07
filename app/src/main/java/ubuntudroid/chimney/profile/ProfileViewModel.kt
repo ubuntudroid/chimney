@@ -1,46 +1,58 @@
 package ubuntudroid.chimney.profile
 
-import android.arch.lifecycle.LifecycleOwner
-import android.arch.lifecycle.Observer
-import android.arch.lifecycle.ViewModel
+import android.arch.lifecycle.*
 import android.databinding.ObservableBoolean
 import android.databinding.ObservableField
+import io.stanwood.framework.loadingindicator.LoadingIndicatorViewModel
 import ubuntudroid.chimney.data.Error
 import ubuntudroid.chimney.data.Loading
 import ubuntudroid.chimney.data.Success
 import ubuntudroid.chimney.data.user.AccountManager
 import ubuntudroid.chimney.data.steam.user.UserRepository
+import ubuntudroid.chimney.util.livedata.SingleLiveEvent
 
 class ProfileViewModel(
         private val userRepository: UserRepository,
         private val accountManager: AccountManager
 ): ViewModel() {
 
-    var userName: ObservableField<String> = ObservableField()
+    private var uiRefreshLiveData: SingleLiveEvent<Any>? = null
 
-    // TODO integrate loading indicator/error library
-    var isLoading: ObservableBoolean = ObservableBoolean(false)
-    var errorMessage: ObservableField<String> = ObservableField()
+    var userName: MutableLiveData<String> = MutableLiveData()
 
-    fun loadUser(lifecycleOwner: LifecycleOwner) {
+    val loadingIndicatorViewModel = LoadingIndicatorViewModel(object : LoadingIndicatorViewModel.ItemClickCallback {
+        override fun onClick(trigger: LoadingIndicatorViewModel) {
+            // TODO I really don't like that we have to go through a livedata to actually call the
+            // load method - there has to be a better way!
+            uiRefreshLiveData?.call()
+        }
+    })
+
+    fun setupLifecycleOwner(lifecycleOwner: LifecycleOwner) {
+        uiRefreshLiveData = SingleLiveEvent<Any>().apply {
+            observe(lifecycleOwner, Observer {
+                load(lifecycleOwner)
+            })
+        }
+        load(lifecycleOwner)
+    }
+
+    private fun load(lifecycleOwner: LifecycleOwner) {
         userRepository.getPlayerSummaries(accountManager.getUserId())
                 .observe(lifecycleOwner, Observer {
                     it?.let {
                         when (it.status) {
                             is Loading -> {
-                                isLoading.set(true)
-                                errorMessage.set(null)
-                                userName.set(null)
+                                loadingIndicatorViewModel.loadingMessage = "Loading data..."
+                                userName.postValue(null)
                             }
                             is Error -> {
-                                isLoading.set(false)
-                                errorMessage.set(it.status.message)
-                                userName.set(null)
+                                loadingIndicatorViewModel.errorMessage = it.status.message
+                                userName.postValue(null)
                             }
                             is Success -> {
-                                isLoading.set(false)
-                                errorMessage.set(null)
-                                userName.set(it.data?.personaName)
+                                loadingIndicatorViewModel.loadingMessage = null
+                                userName.postValue(it.data?.personaName)
                             }
                         }
                     }
