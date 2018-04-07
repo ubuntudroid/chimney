@@ -23,7 +23,11 @@ class ProfileViewModel(
     val loadingIndicatorViewModel = LoadingIndicatorViewModel(object : LoadingIndicatorViewModel.ItemClickCallback {
         override fun onClick(trigger: LoadingIndicatorViewModel) {
             // TODO I really don't like that we have to go through a livedata to actually call the
-            // load method - there has to be a better way!
+            // load method - there has to be a better way! Of course we could also expose this live data
+            // to the outside (activity/fragment) and call load() from there, but this is supposedly
+            // not ideal as well as a view model could also be used by multiple fragments which would
+            // cause load() to be called multiple times or not at all (if we decide to only put it in
+            // one fragment class which might not be attached at the point where the event is emitted)
             uiRefreshLiveData?.call()
         }
     })
