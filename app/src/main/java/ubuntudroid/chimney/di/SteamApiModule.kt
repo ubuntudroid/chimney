@@ -2,7 +2,7 @@ package ubuntudroid.chimney.di
 
 import org.koin.dsl.module.applicationContext
 import retrofit2.Retrofit
-import ubuntudroid.chimney.network.steam.SteamUserApi
+import ubuntudroid.chimney.data.steam.user.network.SteamUserApi
 
 val steamApiModule = applicationContext {
 

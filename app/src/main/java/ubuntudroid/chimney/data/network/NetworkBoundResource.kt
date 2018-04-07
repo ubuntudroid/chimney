@@ -1,9 +1,13 @@
-package ubuntudroid.chimney.data
+package ubuntudroid.chimney.data.network
 
 
 import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MediatorLiveData
 import android.os.AsyncTask
+import ubuntudroid.chimney.data.Error
+import ubuntudroid.chimney.data.Loading
+import ubuntudroid.chimney.data.Resource
+import ubuntudroid.chimney.data.Success
 
 /*
  TODO move this class as well as Resource and ViewLifecycleFragment to LiveDataExtensions library.
@@ -37,8 +41,7 @@ abstract class NetworkBoundResource<ResultType, RequestType> {
      * returns a LiveData that represents the resource, implemented
      * in the base class.
      */
-    val asLiveData: LiveData<Resource<ResultType>>
-        get() = result
+    fun getLiveData() = result
 
     private fun load() {
         result.value = Resource.loading()

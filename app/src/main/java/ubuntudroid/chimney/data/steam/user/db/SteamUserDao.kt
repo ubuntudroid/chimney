@@ -1,4 +1,4 @@
-package ubuntudroid.chimney.db.steam.user
+package ubuntudroid.chimney.data.steam.user.db
 
 import android.arch.lifecycle.LiveData
 import android.arch.persistence.room.*

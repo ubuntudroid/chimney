@@ -1,4 +1,4 @@
-package ubuntudroid.chimney.network.steam
+package ubuntudroid.chimney.data.steam.user.network
 
 import kotlinx.coroutines.experimental.Deferred
 import retrofit2.http.GET

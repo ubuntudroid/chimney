@@ -1,4 +1,4 @@
-package ubuntudroid.chimney.network
+package ubuntudroid.chimney.data.network
 
 import android.content.Context
 import android.net.ConnectivityManager

@@ -1,4 +1,4 @@
-package ubuntudroid.chimney.network.steam
+package ubuntudroid.chimney.data.steam.user.network
 
 import com.google.gson.annotations.SerializedName
 import ubuntudroid.chimney.data.steam.user.PlayerModel

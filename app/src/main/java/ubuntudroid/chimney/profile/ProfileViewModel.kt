@@ -9,7 +9,7 @@ import ubuntudroid.chimney.data.Error
 import ubuntudroid.chimney.data.Loading
 import ubuntudroid.chimney.data.Success
 import ubuntudroid.chimney.data.user.AccountManager
-import ubuntudroid.chimney.data.user.UserRepository
+import ubuntudroid.chimney.data.steam.user.UserRepository
 
 class ProfileViewModel(
         private val userRepository: UserRepository,
