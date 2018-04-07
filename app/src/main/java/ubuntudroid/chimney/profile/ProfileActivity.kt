@@ -17,7 +17,7 @@ class ProfileActivity : AppCompatActivity() {
         val binding: ActivityProfileBinding = DataBindingUtil.setContentView(this, R.layout.activity_profile)
         binding.setLifecycleOwner(this)
         binding.viewModel = viewModel
-        viewModel.setupLifecycleOwner(this)
+        viewModel.load(this)
     }
 
     override fun onPause() {

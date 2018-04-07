@@ -1,6 +1,7 @@
 package ubuntudroid.chimney.data.steam.user
 
 import android.arch.lifecycle.LiveData
+import ubuntudroid.chimney.data.Refreshable
 import ubuntudroid.chimney.data.Resource
 import ubuntudroid.chimney.data.steam.user.db.SteamUserDao
 import ubuntudroid.chimney.data.steam.user.resources.PlayerResource
@@ -14,19 +15,15 @@ class UserRepository(
         private val networkService: NetworkService
 ) {
 
-    private val playerSummaryLiveDatas: MutableMap<String, LiveData<Resource<PlayerModel>>> = mutableMapOf()
+    fun getPlayer(steamId: String): LiveData<Resource<PlayerModel>> =
+            PlayerResource(steamId, steamUserDao, steamUserApi, networkService)
 
-    fun getPlayerSummaries(steamId: String): LiveData<Resource<PlayerModel>> {
-        // return if we already have a live data for this id request
-        playerSummaryLiveDatas[steamId]?.apply { return this }
-
-        val networkLiveData = PlayerResource(steamId, steamUserDao, steamUserApi, networkService).getLiveData()
-
-        // TODO remove from in-memory cache as soon as we have no more observers
-
-        playerSummaryLiveDatas[steamId] = networkLiveData
-
-        return networkLiveData
+    fun refreshPlayer(liveData: LiveData<Resource<PlayerModel>>) {
+        if (liveData is Refreshable) {
+            liveData.refresh()
+        } else {
+            throw IllegalArgumentException("LiveData isn't refreshable!")
+        }
     }
 }
 

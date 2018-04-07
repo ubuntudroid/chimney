@@ -4,10 +4,7 @@ package ubuntudroid.chimney.data.network
 import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MediatorLiveData
 import android.os.AsyncTask
-import ubuntudroid.chimney.data.Error
-import ubuntudroid.chimney.data.Loading
-import ubuntudroid.chimney.data.Resource
-import ubuntudroid.chimney.data.Success
+import ubuntudroid.chimney.data.*
 
 /*
  TODO move this class as well as Resource, SingleLiveEvent and ViewLifecycleFragment to LiveDataExtensions library.
@@ -20,43 +17,62 @@ import ubuntudroid.chimney.data.Success
  *
  * Strongly influenced by Google's architecture component sample implementation.
  */
-abstract class NetworkBoundResource<ResultType, RequestType> {
+abstract class NetworkBoundResource<ResultType, RequestType>: MediatorLiveData<Resource<ResultType>>(), Refreshable {
 
-    // TODO add some force refresh functionality (at first load AND while already in place!)
+    private var dbSource: LiveData<ResultType>? = null
+    private var apiSource: LiveData<Resource<RequestType>>? = null
 
-    private val result = object : MediatorLiveData<Resource<ResultType>>() {
+    private var hasLoaded = false
 
-        private var hasLoaded = false
+    override fun onActive() {
+        super.onActive()
 
-        override fun onActive() {
-            super.onActive()
-            if (!hasLoaded) {
-                hasLoaded = true
-                load()
+        // TODO this might prevent us from refreshing for quite some time if the device has much RAM
+        if (!hasLoaded) {
+            hasLoaded = true
+            load()
+        }
+    }
+
+    private fun load(force: Boolean = false) {
+        value = Resource.loading()
+        dbSource = loadFromDb().apply {
+            if (force) {
+                fetchFromNetwork(this)
+            } else {
+                addSource(this) { data ->
+                    removeSource(this)
+                    if (shouldFetch(data)) {
+                        fetchFromNetwork(this)
+                    } else {
+                        addSource(this) { newData ->
+                            this@NetworkBoundResource.value =
+                                    newData?.let { Resource.success(newData) }
+                                    ?: Resource.error("Empty DB result")
+                        }
+                    }
+                }
             }
         }
     }
 
-    /**
-     * returns a LiveData that represents the resource, implemented
-     * in the base class.
-     */
-    fun getLiveData() = result
+    override fun refresh() {
+        dbSource?.let { removeSource(it) }
+        dbSource = null
+        apiSource?.let { removeSource(it) }
+        apiSource = null
+        load(force = true)
+    }
 
-    private fun load() {
-        result.value = Resource.loading()
-        val dbSource = loadFromDb()
-        result.addSource(dbSource) { data ->
-            result.removeSource(dbSource)
-            if (shouldFetch(data)) {
-                fetchFromNetwork(dbSource)
-            } else {
-                result.addSource(dbSource) { newData ->
-                    result.value =
-                            newData?.let { Resource.success(newData) }
-                            ?: Resource.error("Empty DB result")
-                }
-            }
+    override fun setValue(newValue: Resource<ResultType>?) {
+        if (value != newValue) {
+            super.setValue(newValue)
+        }
+    }
+
+    override fun postValue(newValue: Resource<ResultType>?) {
+        if (value != newValue) {
+            super.postValue(newValue)
         }
     }
 
@@ -88,24 +104,25 @@ abstract class NetworkBoundResource<ResultType, RequestType> {
     protected open fun onFetchFailed() {}
 
     private fun fetchFromNetwork(dbSource: LiveData<ResultType>) {
-        val apiResponse = createCall()
-        /*
-        we re-attach dbSource as a new source,
-        it will dispatch its latest value quickly
-        */
-        result.addSource(dbSource) { newData -> result.setValue(Resource.loading(newData)) }
-        result.addSource(apiResponse) { response ->
-            result.removeSource(apiResponse)
-            result.removeSource(dbSource)
+        apiSource = createCall().apply {
+            /*
+            we re-attach dbSource as a new source,
+            it will dispatch its latest value quickly
+            */
+            addSource(dbSource) { newData -> this@NetworkBoundResource.setValue(Resource.loading(newData)) }
+            addSource(this) { response ->
+                removeSource(this)
+                removeSource(dbSource)
 
-            response?.let {
-                when (response.status) {
-                    is Success, is Loading -> saveResultAndReInit(response.data!!)
-                    is Error -> {
-                        onFetchFailed()
-                        result.addSource(dbSource) {
-                            result.setValue(
-                                    Resource.error(response.status.message))
+                response?.let {
+                    when (response.status) {
+                        is Success, is Loading -> saveResultAndReInit(response.data!!)
+                        is Error -> {
+                            onFetchFailed()
+                            addSource(dbSource) {
+                                this@NetworkBoundResource.setValue(
+                                        Resource.error(response.status.message))
+                            }
                         }
                     }
                 }
@@ -129,8 +146,8 @@ abstract class NetworkBoundResource<ResultType, RequestType> {
                 otherwise we will get immediately last cached value,
                 which may not be updated with latest results received from network.
                 */
-                result.addSource(loadFromDb()) { newData ->
-                    result.value =
+                addSource(loadFromDb()) { newData ->
+                    value =
                             newData?.let { Resource.success(newData) }
                             ?: Resource.error("Empty DB result")
                 }
