@@ -2,6 +2,8 @@ package ubuntudroid.chimney
 
 import android.app.Application
 import org.koin.android.ext.android.startKoin
+import org.koin.android.ext.koin.with
+import org.koin.standalone.StandAloneContext
 import timber.log.Timber
 import ubuntudroid.chimney.di.ApplicationComponent
 
@@ -14,6 +16,6 @@ class ChimneyApplication: Application() {
             Timber.plant(Timber.DebugTree())
         }
 
-        startKoin(this, ApplicationComponent.modules)
+        StandAloneContext.startKoin(ApplicationComponent.modules) with this
     }
 }
