@@ -1,0 +1,117 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 1,
+    "identityHash": "3c943716f87fa6340f39ad794aedbdec",
+    "entities": [
+      {
+        "tableName": "PlayerModel",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`steamId` TEXT NOT NULL, `communityvisibilitystate` INTEGER NOT NULL, `profilestate` INTEGER NOT NULL, `personaname` TEXT NOT NULL, `lastlogoff` INTEGER NOT NULL, `profileurl` TEXT NOT NULL, `avatar` TEXT NOT NULL, `avatarmedium` TEXT NOT NULL, `avatarfull` TEXT NOT NULL, `personastate` INTEGER NOT NULL, `realname` TEXT, `primaryclanid` TEXT, `timecreated` INTEGER NOT NULL, `personastateflags` INTEGER NOT NULL, `timestamp` INTEGER NOT NULL, PRIMARY KEY(`steamId`))",
+        "fields": [
+          {
+            "fieldPath": "steamId",
+            "columnName": "steamId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "communityVisibilityState",
+            "columnName": "communityvisibilitystate",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "profileState",
+            "columnName": "profilestate",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "personaName",
+            "columnName": "personaname",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "lastLogoff",
+            "columnName": "lastlogoff",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "profileUrl",
+            "columnName": "profileurl",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "avatar",
+            "columnName": "avatar",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "avatarMedium",
+            "columnName": "avatarmedium",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "avatarFull",
+            "columnName": "avatarfull",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "personaState",
+            "columnName": "personastate",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "realName",
+            "columnName": "realname",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "primaryClanId",
+            "columnName": "primaryclanid",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "timeCreated",
+            "columnName": "timecreated",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "personaStateFlags",
+            "columnName": "personastateflags",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "timestamp",
+            "columnName": "timestamp",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "steamId"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": []
+      }
+    ],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"3c943716f87fa6340f39ad794aedbdec\")"
+    ]
+  }
+}

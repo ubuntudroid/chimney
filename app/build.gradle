@@ -25,6 +25,12 @@ android {
         buildConfigField "String", "STEAM_API_TOKEN", "\"$steam_api_token\""
         buildConfigField "String", "STEAM_USER_ID", "\"$steam_user_id\""
         buildConfigField "String", "STEAM_BASE_URL", "\"https://api.steampowered.com\""
+
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments = ["room.schemaLocation": "$projectDir/schemas".toString()]
+            }
+        }
     }
     buildTypes {
         release {
