@@ -10,6 +10,8 @@ import ubuntudroid.chimney.databinding.ActivityProfileBinding
 
 class ProfileActivity : AppCompatActivity() {
 
+    // TODO later on we're going to use a Fragment here, but for now an Activity suffices
+
     private val viewModel by viewModel<ProfileViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {

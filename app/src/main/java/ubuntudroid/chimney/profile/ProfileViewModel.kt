@@ -13,7 +13,9 @@ class ProfileViewModel(
         private val accountManager: AccountManager
 ): ViewModel() {
 
-    val userName: MutableLiveData<String> = MutableLiveData()
+    val userName: MutableLiveData<String?> = MutableLiveData()
+    val avatar: MutableLiveData<String?> = MutableLiveData()
+
     private val player by lazy {
         userRepository.getPlayer(accountManager.getUserId())
     }
@@ -34,14 +36,17 @@ class ProfileViewModel(
                             is Loading -> {
                                 loadingIndicatorViewModel.loadingMessage = "Loading data..."
                                 userName.postValue(null)
+                                avatar.postValue(null)
                             }
                             is Error -> {
                                 loadingIndicatorViewModel.errorMessage = it.status.message
                                 userName.postValue(null)
+                                avatar.postValue(null)
                             }
                             is Success -> {
                                 loadingIndicatorViewModel.loadingMessage = null
                                 userName.postValue(it.data?.personaName)
+                                avatar.postValue(it.data?.avatarFull)
                             }
                         }
                     }
