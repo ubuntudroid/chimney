@@ -22,7 +22,7 @@ import timber.log.Timber
  */
 class SingleLiveEvent<T> : MutableLiveData<T>() {
 
-    private val mPending = AtomicBoolean(false)
+    private val pending = AtomicBoolean(false)
 
     override fun observe(owner: LifecycleOwner, observer: Observer<T>) {
 
@@ -32,14 +32,14 @@ class SingleLiveEvent<T> : MutableLiveData<T>() {
 
         // Observe the internal MutableLiveData
         super.observe(owner, Observer { t ->
-            if (mPending.compareAndSet(true, false)) {
+            if (pending.compareAndSet(true, false)) {
                 observer.onChanged(t)
             }
         })
     }
 
     override fun setValue(t: T?) {
-        mPending.set(true)
+        pending.set(true)
         super.setValue(t)
     }
 
